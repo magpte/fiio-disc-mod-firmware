@@ -575,11 +575,13 @@ static void bind_display_refresh(void) {
 }
 #include "../dlna/ui.h"
 #include "../online-music/ui.h"
+#include "../podcast-radio/ui.h"
 static void poll(void) {
  frame_probe_poll();
  remote_eq_tick();remote_bt_prepare();remote_bt_refresh();
  dlna_poll();
  online_poll();
+ pr_poll();
  toolbox_poll();
  library_scope_poll();
  ds_whitepoint_poll();

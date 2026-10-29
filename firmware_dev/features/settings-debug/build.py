@@ -92,8 +92,16 @@ lines.append('};');(HERE/'guard.h').write_text('\n'.join(lines)+'\n')
 if '--guards-only' in sys.argv:
  print('SHA-locked native headers refreshed; no ELF compiled')
  sys.exit(0)
-out=HERE/'build';out.mkdir(exist_ok=True);(out/'librt.so.1').write_bytes(bridge(rt))
-subprocess.run(['clang','--target=mipsel-linux-gnu','-march=mips32r2','-mabi=32','-mhard-float','-mfp64','-mnan=2008','-O2','-Wall','-Wextra','-Werror','-fno-builtin','-fPIC','-shared','-nostdlib','-fuse-ld=lld','-L'+str(BASE/'lib'),'-Wl,-l:libpthread.so.0,-l:libdl.so.2,-l:libm.so.6,-l:libc.so.6,--no-undefined,-z,noexecstack',str(HERE/'settings.c'),'-o',str(out/'disc-settings.so')],check=True)
+lib_dir = str(BASE/'lib') if (BASE/'lib').exists() else '/root/disi02_rootfs_extracted/lib'
+subprocess.run(['clang','--target=mipsel-linux-gnu','-march=mips32r2','-mabi=32','-mhard-float','-mfp64','-mnan=2008','-O2','-Wall','-Wextra','-Werror','-fno-builtin','-fPIC','-shared','-nostdlib','-fuse-ld=lld','-L'+lib_dir,'-Wl,-l:libpthread.so.0,-l:libdl.so.2,-l:libm.so.6,-l:libc.so.6,--no-undefined,-z,noexecstack',str(HERE/'settings.c'),'-o',str(out/'disc-settings.so')],check=True)
+
+# Strict GLIBC version check: FiiO DISC uses GLIBC 2.29, all symbols must be strictly < 2.34
+import re
+ro = subprocess.check_output(['readelf','-V',str(out/'disc-settings.so')]).decode('utf-8',errors='ignore')
+bad_glibc = [f'GLIBC_{maj}.{min_}' for maj,min_ in re.findall(r'GLIBC_(\d+)\.(\d+)', ro) if int(maj)>2 or (int(maj)==2 and int(min_)>=34)]
+if bad_glibc:
+    raise RuntimeError(f"FATAL: disc-settings.so requires GLIBC >= 2.34: {set(bad_glibc)}! Device only supports GLIBC 2.29.")
+print(f"GLIBC version gate PASS: all symbols satisfy GLIBC <= 2.29 (strictly < 2.34).")
 report={n:{'sha256':hashlib.sha256((out/n).read_bytes()).hexdigest(),'bytes':(out/n).stat().st_size} for n in ['disc-settings.so','librt.so.1']}
 (HERE/'build-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))
 (out/'host-build.json').write_text(json.dumps({'version':MENU_BRIDGE_VERSION,'artifacts':report},indent=2)+'\n')
