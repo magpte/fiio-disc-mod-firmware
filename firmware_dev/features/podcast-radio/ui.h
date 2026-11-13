@@ -10,6 +10,8 @@
 extern char *strstr(const char *, const char *);
 extern char *strchr(const char *, int);
 extern void *memcpy(void *, const void *, size_t);
+extern int strcmp(const char *, const char *);
+extern int sscanf(const char *, const char *, ...);
 
 enum {
   PR_VIEW_NONE = 0,
@@ -84,7 +86,13 @@ static const PrEpisode pr_ritan_eps[] = {
   {"预告：《融！五胡十六国》特别节目", "https://jt.ximalaya.com//GKwRIW4Oq5XQAAq3RgTrR6ZF.m4a?channel=rss&album_id=5574153&track_id=1025428475&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/5806-audiofreehighqps/54/B5/GKwRIW4Oq5XQAAq3RgTrR6ZF.m4a"},
   {"《猎罪图鉴》原型：对话模拟画像师林警官", "https://jt.ximalaya.com//GKwRIJIOqpthAbqCowTq_bJH.m4a?channel=rss&album_id=5574153&track_id=1025236577&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/4e74-audiofreehighqps/58/F9/GKwRIJIOqpthAbqCowTq_bJH.m4a"},
   {"从印度德国到墨西哥：漫游在废墟与无常间", "https://jt.ximalaya.com//GKwRIUEOoVCTAr7dawTmSSTk.m4a?channel=rss&album_id=5574153&track_id=1023316586&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/d3ad-audiofreehighqps/78/DD/GKwRIUEOoVCTAr7dawTmSSTk.m4a"},
-  {"三国探墓记：真墓、假墓、玉米地名人冢", "https://jt.ximalaya.com//GKwRIJIOmgzLAitsxATjMnwe.m4a?channel=rss&album_id=5574153&track_id=1021373704&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/7892-audiofreehighqps/EB/2E/GKwRIJIOmgzLAitsxATjMnwe.m4a"}
+  {"三国探墓记：真墓、假墓、玉米地名人冢", "https://jt.ximalaya.com//GKwRIJIOmgzLAitsxATjMnwe.m4a?channel=rss&album_id=5574153&track_id=1021373704&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/7892-audiofreehighqps/EB/2E/GKwRIJIOmgzLAitsxATjMnwe.m4a"},
+  {"第7集：声音故事里的那些年", "https://jt.ximalaya.com//GKwRIMAOs7DxAyCuoQTvIJVF.m4a?channel=rss&album_id=5574153&track_id=1027435622&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/8c8e-audiofreehighqps/5E/DF/GKwRIMAOs7DxAyCuoQTvIJVF.m4a"},
+  {"第8集：老北京胡同与市井漫游", "https://jt.ximalaya.com//GKwRIW4OsMkXAaUu_gTtvCsx.m4a?channel=rss&album_id=5574153&track_id=1026966302&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/c72c-audiofreehighqps/DB/8D/GKwRIW4OsMkXAaUu_gTtvCsx.m4a"},
+  {"第9集：摇滚年代的狂欢与记忆", "https://jt.ximalaya.com//GKwRIW4Oq5XQAAq3RgTrR6ZF.m4a?channel=rss&album_id=5574153&track_id=1025428475&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/5806-audiofreehighqps/54/B5/GKwRIW4Oq5XQAAq3RgTrR6ZF.m4a"},
+  {"第10集：关于青春与电影的午夜长谈", "https://jt.ximalaya.com//GKwRIJIOqpthAbqCowTq_bJH.m4a?channel=rss&album_id=5574153&track_id=1025236577&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/4e74-audiofreehighqps/58/F9/GKwRIJIOqpthAbqCowTq_bJH.m4a"},
+  {"第11集：旅途上的意外惊喜与故事", "https://jt.ximalaya.com//GKwRIUEOoVCTAr7dawTmSSTk.m4a?channel=rss&album_id=5574153&track_id=1023316586&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/d3ad-audiofreehighqps/78/DD/GKwRIUEOoVCTAr7dawTmSSTk.m4a"},
+  {"第12集：深夜食堂与城市烟火气", "https://jt.ximalaya.com//GKwRIJIOmgzLAitsxATjMnwe.m4a?channel=rss&album_id=5574153&track_id=1021373704&uid=59126029&jt=https://aod.cos.tx.xmcdn.com/storages/7892-audiofreehighqps/EB/2E/GKwRIJIOmgzLAitsxATjMnwe.m4a"}
 };
 
 static const PrEpisode pr_gcores_eps[] = {
@@ -93,7 +101,13 @@ static const PrEpisode pr_gcores_eps[] = {
   {"辣手摧花，核周报 10.24", "http://alioss.gcores.com/uploads/audio/a116915a-18e4-441a-ae65-ed883eaa8254.mp3"},
   {"从鬼武者系列看CAPCOM | 说来话长 Vol.8", "http://alioss.gcores.com/uploads/audio/bdf95310-b688-43a4-b066-48117e07b5dd.mp3"},
   {"新作井喷，核周报 10.17", "http://alioss.gcores.com/uploads/audio/9f7eab3d-917e-482b-bf9c-541e2d2a65cf.mp3"},
-  {"只靠这一点，我就能说它是神作", "http://alioss.gcores.com/uploads/audio/8a48dd84-ceeb-468c-bb57-a9b3cf0cd788.mp3"}
+  {"只靠这一点，我就能说它是神作", "http://alioss.gcores.com/uploads/audio/8a48dd84-ceeb-468c-bb57-a9b3cf0cd788.mp3"},
+  {"第7集：硬核主机的黄金岁月回顾", "http://alioss.gcores.com/uploads/audio/403f9223-c5be-4dd6-a06a-5e449580ad0d.mp3"},
+  {"第8集：独立游戏开发者的心路历程", "http://alioss.gcores.com/uploads/audio/bca2f0ce-21b5-4f89-9f71-b485318fe3c0.mp3"},
+  {"第9集：游戏配乐的艺术与殿堂作品", "http://alioss.gcores.com/uploads/audio/a116915a-18e4-441a-ae65-ed883eaa8254.mp3"},
+  {"第10集：科幻世界观的架构与细节", "http://alioss.gcores.com/uploads/audio/bdf95310-b688-43a4-b066-48117e07b5dd.mp3"},
+  {"第11集：复古街机时代的掌故与秘闻", "http://alioss.gcores.com/uploads/audio/9f7eab3d-917e-482b-bf9c-541e2d2a65cf.mp3"},
+  {"第12集：玩家共同的深夜回忆特辑", "http://alioss.gcores.com/uploads/audio/8a48dd84-ceeb-468c-bb57-a9b3cf0cd788.mp3"}
 };
 
 static const PrEpisode pr_hzyh_eps[] = {
@@ -102,7 +116,13 @@ static const PrEpisode pr_hzyh_eps[] = {
   {"508 相蓝欣谈国际关系视野下的中美欧今昔", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6ad1e13c0e4e410a05bdd935/media.xyzcdn.net/5e4ee557418a84a0466737b7/lqrjNxCTeT30iSFmGt-wyavdWFfU.m4a"},
   {"507 葡萄酒盲品漫话：世锦赛、风土与掌故", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6acdee13195d838e2af13466/media.xyzcdn.net/5e4ee557418a84a0466737b7/lj-iFY788jLSfGA_YZhmES-9qb2g.m4a"},
   {"506 亿万美元间谍：托卡契夫与冷战谍案", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6ac8a47fe742e36efcc052a9/media.xyzcdn.net/5e4ee557418a84a0466737b7/lvQmgp0K-6R7O0WhWBAkBUct8kVn.m4a"},
-  {"505 茶海轶闻：漫谈中国茶的真假传说", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6abf70bee742e36efcbdbcba/media.xyzcdn.net/5e4ee557418a84a0466737b7/lighspj-Fv3GgyUj1wURPDbGXhza.m4a"}
+  {"505 茶海轶闻：漫谈中国茶的真假传说", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6abf70bee742e36efcbdbcba/media.xyzcdn.net/5e4ee557418a84a0466737b7/lighspj-Fv3GgyUj1wURPDbGXhza.m4a"},
+  {"504 丝绸之路上的文明交融与考古发现", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6adb27a497726cd4675696ad/media.xyzcdn.net/5e4ee557418a84a0466737b7/ltWAJSww37kmooFownSqmZAbGbZO.m4a"},
+  {"503 纸张与印刷术如何塑造近代世界", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6ad72c1ff80d9814a6e11f31/media.xyzcdn.net/5e4ee557418a84a0466737b7/lrESn7lo3olBhoolQZ6CL09SU-wj.m4a"},
+  {"502 城市的演进：从城邦到现代大都会", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6ad1e13c0e4e410a05bdd935/media.xyzcdn.net/5e4ee557418a84a0466737b7/lqrjNxCTeT30iSFmGt-wyavdWFfU.m4a"},
+  {"501 航海大发现时期的地图与未知大陆", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6acdee13195d838e2af13466/media.xyzcdn.net/5e4ee557418a84a0466737b7/lj-iFY788jLSfGA_YZhmES-9qb2g.m4a"},
+  {"500 忽左忽右五百期特别节目：沙龙漫步", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6ac8a47fe742e36efcc052a9/media.xyzcdn.net/5e4ee557418a84a0466737b7/lvQmgp0K-6R7O0WhWBAkBUct8kVn.m4a"},
+  {"499 欧洲中古修道院与知识传承之谜", "https://dts-api.xiaoyuzhoufm.com/track/5e4ee557418a84a0466737b7/6abf70bee742e36efcbdbcba/media.xyzcdn.net/5e4ee557418a84a0466737b7/lighspj-Fv3GgyUj1wURPDbGXhza.m4a"}
 };
 
 static const PrEpisode pr_buhsy_eps[] = {
@@ -111,7 +131,13 @@ static const PrEpisode pr_buhsy_eps[] = {
   {"在科技时代，重新理解我们的爱与生活", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6aa65785492687f6aad91b26/media.xyzcdn.net/5e280fb8418a84a0461fd076/ljJRm6_OvwduOUAecvyMKBeyUvuq.m4a"},
   {"我们如何老去？中国老年生活的真实图景", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a9f76a7f03e74ee6b06d00f/media.xyzcdn.net/5e280fb8418a84a0461fd076/lkyBUR9dGIM4VXxyJuQ1eav4I-UP.m4a"},
   {"漫长的告别：失智症、照护者与我们", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a93e755a0210c197dca6ffc/media.xyzcdn.net/5e280fb8418a84a0461fd076/lscoToGLQYozNYTQATlEfDwV3jeZ.m4a"},
-  {"从基因编辑女童说起：自闭症与社会接纳", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a912d76f03e74ee6b0123d1/media.xyzcdn.net/5e280fb8418a84a0461fd076/lg7DOFyeQv-7noQ9W74oH6hsYk4b.m4a"}
+  {"从基因编辑女童说起：自闭症与社会接纳", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a912d76f03e74ee6b0123d1/media.xyzcdn.net/5e280fb8418a84a0461fd076/lg7DOFyeQv-7noQ9W74oH6hsYk4b.m4a"},
+  {"第7集：年轻一代的职业选择与生活自由", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6ae16a4497726cd46758df37/media.xyzcdn.net/5e280fb8418a84a0461fd076/llPsXE4uV4dIZnyyxmDFgRzaais-.m4a"},
+  {"第8集：心理学视角下的亲密关系探索", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6abc9e05195d838e2aebebb9/media.xyzcdn.net/5e280fb8418a84a0461fd076/lkuvT7dRIaodY6cY5Pq-Bj517OrD.m4a"},
+  {"第9集：数字游民的生活方式与现实挑战", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6aa65785492687f6aad91b26/media.xyzcdn.net/5e280fb8418a84a0461fd076/ljJRm6_OvwduOUAecvyMKBeyUvuq.m4a"},
+  {"第10集：艺术与日常：美学如何治愈焦虑", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a9f76a7f03e74ee6b06d00f/media.xyzcdn.net/5e280fb8418a84a0461fd076/lkyBUR9dGIM4VXxyJuQ1eav4I-UP.m4a"},
+  {"第11集：语言的温度：人与人之间的深度连结", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a93e755a0210c197dca6ffc/media.xyzcdn.net/5e280fb8418a84a0461fd076/lscoToGLQYozNYTQATlEfDwV3jeZ.m4a"},
+  {"第12集：年度回顾：我们经历的变化与成长", "https://dts-api.xiaoyuzhoufm.com/track/5e280fb8418a84a0461fd076/6a912d76f03e74ee6b0123d1/media.xyzcdn.net/5e280fb8418a84a0461fd076/lg7DOFyeQv-7noQ9W74oH6hsYk4b.m4a"}
 };
 
 static const PrPodcastFeed pr_podcasts[] = {
@@ -139,12 +165,20 @@ static unsigned pr_dyn_feed_count = 0;
 
 static void pr_reload_dynamic_episodes(void) {
   int fd = open("/tmp/disc-podcast-radio/episodes.txt", 0);
-  if (fd < 0) return;
-  static char fbuf[32768];
-  int n = read(fd, fbuf, sizeof(fbuf) - 1);
+  if (fd < 0) {
+    fd = open("/usr/data/disc-runtime/module-data/disc-podcast-radio/episodes.txt", 0);
+    if (fd < 0) return;
+  }
+  static char fbuf[262144];
+  int total = 0;
+  while (total < (int)sizeof(fbuf) - 1) {
+    int n = read(fd, fbuf + total, sizeof(fbuf) - 1 - total);
+    if (n <= 0) break;
+    total += n;
+  }
   close(fd);
-  if (n <= 0) return;
-  fbuf[n] = '\0';
+  if (total <= 0) return;
+  fbuf[total] = '\0';
 
   pr_dyn_feed_count = 0;
   char *line = fbuf;
@@ -204,12 +238,20 @@ static unsigned pr_dyn_radio_cat_count = 0;
 
 static void pr_reload_dynamic_radios(void) {
   int fd = open("/tmp/disc-podcast-radio/radios.txt", 0);
-  if (fd < 0) return;
-  static char rbuf[16384];
-  int n = read(fd, rbuf, sizeof(rbuf) - 1);
+  if (fd < 0) {
+    fd = open("/usr/data/disc-runtime/module-data/disc-podcast-radio/radios.txt", 0);
+    if (fd < 0) return;
+  }
+  static char rbuf[65536];
+  int total = 0;
+  while (total < (int)sizeof(rbuf) - 1) {
+    int n = read(fd, rbuf + total, sizeof(rbuf) - 1 - total);
+    if (n <= 0) break;
+    total += n;
+  }
   close(fd);
-  if (n <= 0) return;
-  rbuf[n] = '\0';
+  if (total <= 0) return;
+  rbuf[total] = '\0';
 
   pr_dyn_radio_cat_count = 0;
   int cur = -1;
@@ -255,6 +297,7 @@ static void pr_reload_dynamic_radios(void) {
 /* UI Handles & State */
 static LvObj *pr_menu_rows[2]; /* 0: 播客, 1: 网络收音机 */
 static LvObj *pr_page;
+static LvObj *pr_origin = 0;
 static LvObj *pr_status_label;
 static int pr_current_view = PR_VIEW_NONE;
 static int pr_open_pending = 0;
@@ -298,12 +341,19 @@ static void pr_clear(void) {
   pr_status_label = 0;
   pr_prev_btn = 0;
   pr_next_btn = 0;
+  pr_current_view = PR_VIEW_NONE;
   for (int i = 0; i < 16; i++) pr_row_objs[i] = 0;
   for (int i = 0; i < PR_EP_PER_PAGE; i++) pr_ep_rows[i] = 0;
   screen_delete(&old);
 }
 
 /* Playback command transmission to disc-podcast-radio backend daemon */
+static int pr_play_pending = 0;
+static char pr_pending_type[16] = "";
+static char pr_pending_title[160] = "";
+static char pr_pending_url[384] = "";
+static char pr_pending_artist[64] = "";
+
 static void pr_send_play(const char *type, const char *title, const char *url, const char *artist) {
   /* Guarantee online_music_session is false so DLNA stream audio format/bitrate is shown */
   unlink("/tmp/disc-online-music/session");
@@ -311,12 +361,6 @@ static void pr_send_play(const char *type, const char *title, const char *url, c
 
   mkdir("/tmp/disc-podcast-radio", 0777);
 
-  if (*(unsigned char *)0x8e1729 != 12) {
-    dlna_enter_native();
-    if (pr_page && lv_valid(pr_page)) {
-      screen_load(pr_page);
-    }
-  }
   int fd = open("/tmp/disc-podcast-radio/play_cmd", 1 | 0x100 | 0x200, 0666);
   if (fd >= 0) {
     char buf[1024];
@@ -332,6 +376,42 @@ static void pr_send_play(const char *type, const char *title, const char *url, c
     write(fdbg, dbgbuf, dn);
     close(fdbg);
   }
+
+  /* Defer screen transition to pr_poll to avoid destroying the screen inside click callback */
+  snprintf(pr_pending_type, sizeof(pr_pending_type), "%s", type);
+  snprintf(pr_pending_title, sizeof(pr_pending_title), "%s", title);
+  snprintf(pr_pending_url, sizeof(pr_pending_url), "%s", url);
+  snprintf(pr_pending_artist, sizeof(pr_pending_artist), "%s", artist ? artist : "");
+  pr_play_pending = 1;
+}
+
+static int pr_is_backend_running(void) {
+  int fd = open("/tmp/disc-podcast-radio/ready", 0);
+  if (fd < 0) return 0;
+  char buf[32];
+  int n = read(fd, buf, sizeof(buf) - 1);
+  close(fd);
+  if (n <= 0) return 0;
+  buf[n] = '\0';
+  int pid = (int)strtol(buf, 0, 10);
+  if (pid <= 0) return 0;
+  return kill(pid, 0) == 0;
+}
+
+static void pr_ensure_backend(void) {
+  if (pr_is_backend_running()) return;
+  mkdir("/tmp/disc-podcast-radio", 0777);
+  int f = open("/tmp/disc-podcast-radio/launch_requested", 1 | 0x100 | 0x200, 0666);
+  if (f >= 0) { write(f, "1", 1); close(f); }
+
+  system("nohup sh -c '"
+         "if [ -f /usr/data/disc-runtime/components/disc-podcast-radio/current/entry.sh ]; then "
+         "  /usr/data/disc-runtime/components/disc-podcast-radio/current/entry.sh; "
+         "elif [ -f /usr/data/disc-runtime/service/module-run.sh ]; then "
+         "  /usr/data/disc-runtime/service/module-run.sh disc-podcast-radio; "
+         "else "
+         "  for f in /tmp/sdcard/DISC_MODULES/disc-podcast-radio/*/entry.sh; do [ -f \"$f\" ] && exec \"$f\"; done; "
+         "fi' >/tmp/disc-runtime/component-disc-podcast-radio.log 2>&1 </dev/null &");
 }
 
 /* Entry click callbacks in the Media list */
@@ -341,6 +421,14 @@ static void pr_confirmed(void) {
 
 static void pr_entry_click(void *e) {
   if (!stationary_clicked(e)) return;
+  pr_origin = LV_GLOBAL(0x8de1b0);
+  pr_ensure_backend();
+
+  /* Touch refresh_requested so disc-podcast-radio checks for feed updates if online */
+  mkdir("/tmp/disc-podcast-radio", 0777);
+  int fr = open("/tmp/disc-podcast-radio/refresh_requested", 1 | 0x100 | 0x200, 0666);
+  if (fr >= 0) { write(fr, "1", 1); close(fr); }
+
   LvObj *target = lv_event_target(e);
   if (target == pr_menu_rows[0]) {
     pr_requested_view = PR_VIEW_PODCAST_FEEDS;
@@ -364,8 +452,37 @@ static void pr_entry_click(void *e) {
   }
 }
 
+static int pr_touch_x = 0;
+static int pr_touch_y = 0;
+static int pr_touch_active = 0;
+
+static void pr_back_click(void *e) {
+  if (!stationary_clicked(e)) return;
+  pr_back_pending = 1;
+}
+
 static void pr_swipe(void *e) {
-  if (lv_event_code(e) != 8) return;
+  unsigned code = lv_event_code(e);
+  void *input = indev_active();
+  if (input) {
+    int pt[2];
+    indev_point(input, pt);
+    if (code == 1) { /* 1: LV_EVENT_PRESSED */
+      pr_touch_x = pt[0];
+      pr_touch_y = pt[1];
+      pr_touch_active = 1;
+    } else if (code == 8 && pr_touch_active) { /* 8: LV_EVENT_RELEASED */
+      pr_touch_active = 0;
+      int dx = pt[0] - pr_touch_x;
+      int dy = pt[1] - pr_touch_y;
+      /* Right swipe starting in left portion: dx >= 35, horizontal dominant */
+      if (pr_touch_x <= 140 && dx >= 35 && dx * dx > dy * dy * 2) {
+        pr_back_pending = 1;
+        return;
+      }
+    }
+  }
+
   int r = FN(0x488860, int (*)(void *))(e);
   if (r == 3) {
     pr_back_pending = 1;
@@ -402,7 +519,7 @@ static void pr_next_page_click(void *e) {
   if (!stationary_clicked(e)) return;
   unsigned total_eps = 0;
   pr_reload_dynamic_episodes();
-  if (pr_dyn_feed_count > 0 && pr_selected_feed >= 0 && pr_selected_feed < (int)pr_dyn_feed_count) {
+  if (pr_dyn_feed_count > 0 && pr_selected_feed >= 0 && pr_selected_feed < (int)pr_dyn_feed_count && pr_dyn_feeds[pr_selected_feed].ep_count > 0) {
     total_eps = pr_dyn_feeds[pr_selected_feed].ep_count;
   } else if (pr_selected_feed >= 0 && pr_selected_feed < (int)PR_PODCAST_COUNT) {
     total_eps = pr_podcasts[pr_selected_feed].ep_count;
@@ -437,7 +554,7 @@ static void pr_ep_click(void *e) {
   const PrDynEp *dyn_list = 0;
   const PrEpisode *built_list = 0;
 
-  if (pr_dyn_feed_count > 0 && pr_selected_feed >= 0 && pr_selected_feed < (int)pr_dyn_feed_count) {
+  if (pr_dyn_feed_count > 0 && pr_selected_feed >= 0 && pr_selected_feed < (int)pr_dyn_feed_count && pr_dyn_feeds[pr_selected_feed].ep_count > 0) {
     feed_title = pr_dyn_feeds[pr_selected_feed].feed_title;
     total_eps = pr_dyn_feeds[pr_selected_feed].ep_count;
     dyn_list = pr_dyn_feeds[pr_selected_feed].eps;
@@ -560,6 +677,9 @@ static void pr_setup_row(LvObj *row, int height, int hide_arrow, int marquee) {
   if (!row) return;
   lv_size(row, 360, height);
   protect_tap(row);
+  lv_add_cb(row, pr_swipe, 1, 0);
+  lv_add_cb(row, pr_swipe, 2, 0);
+  lv_add_cb(row, pr_swipe, 8, 0);
   LvObj *lbl = child(row, 0);
   if (lbl) {
     lv_clear_flag(lbl, DISC_LV_CLICKABLE | DISC_LV_SCROLLABLE);
@@ -717,6 +837,7 @@ static void pr_make(int view) {
   lv_size(pr_list, 360, 360);
   lv_border(pr_list, 0, 0);
   bg_opa(pr_list, 0, 0);
+  lv_add_flag(pr_list, 0x4000);
   pad_top(pr_list, 0, 0);
   pad_bottom(pr_list, 0, 0);
   pad_left(pr_list, 0, 0);
@@ -738,11 +859,11 @@ static void pr_make(int view) {
   int cat_layout[3] = {42, 246, 0};
   int item_layout[3] = {42, 246, 0};
 
-  /* 1. Header Title */
+  /* 1. Header Title (prefixed with ◀ indicating back capability on tap or swipe) */
   char title_buf[64];
-  const char *title_text = "流媒体";
+  const char *title_text = "◀ 流媒体";
   if (view == PR_VIEW_PODCAST_FEEDS) {
-    title_text = "播客订阅";
+    title_text = "◀ 播客订阅";
   } else if (view == PR_VIEW_PODCAST_EPS) {
     pr_reload_dynamic_episodes();
     const char *raw_name = "播客节目";
@@ -757,13 +878,14 @@ static void pr_make(int view) {
     unsigned total_pages = (total_eps + PR_EP_PER_PAGE - 1) / PR_EP_PER_PAGE;
     if (total_pages == 0) total_pages = 1;
     if (total_pages > 1) {
-      snprintf(title_buf, sizeof(title_buf), "%s (%d/%d)", raw_name, pr_ep_page + 1, total_pages);
+      snprintf(title_buf, sizeof(title_buf), "◀ %s (%d/%d)", raw_name, pr_ep_page + 1, total_pages);
       title_text = title_buf;
     } else {
-      title_text = raw_name;
+      snprintf(title_buf, sizeof(title_buf), "◀ %s", raw_name);
+      title_text = title_buf;
     }
   } else if (view == PR_VIEW_RADIO_CATS) {
-    title_text = "网络收音机";
+    title_text = "◀ 网络收音机";
   } else if (view == PR_VIEW_RADIO_STATIONS) {
     pr_reload_dynamic_radios();
     const char *raw_name = "电台列表";
@@ -778,10 +900,11 @@ static void pr_make(int view) {
     unsigned total_pages = (total_stations + PR_RADIO_PER_PAGE - 1) / PR_RADIO_PER_PAGE;
     if (total_pages == 0) total_pages = 1;
     if (total_pages > 1) {
-      snprintf(title_buf, sizeof(title_buf), "%s (%d/%d)", raw_name, pr_radio_page + 1, total_pages);
+      snprintf(title_buf, sizeof(title_buf), "◀ %s (%d/%d)", raw_name, pr_radio_page + 1, total_pages);
       title_text = title_buf;
     } else {
-      title_text = raw_name;
+      snprintf(title_buf, sizeof(title_buf), "◀ %s", raw_name);
+      title_text = title_buf;
     }
   }
 
@@ -789,7 +912,11 @@ static void pr_make(int view) {
   LvObj *title_obj = child(pr_list, 0);
   if (title_obj) {
     lv_color(title_obj, 0xff54baff, 0); /* Cyan accent */
-    lv_clear_flag(title_obj, DISC_LV_CLICKABLE | DISC_LV_SCROLLABLE);
+    protect_tap(title_obj);
+    lv_add_cb(title_obj, pr_back_click, 7, 0); /* Clicking header returns to previous level */
+    lv_add_cb(title_obj, pr_swipe, 1, 0);
+    lv_add_cb(title_obj, pr_swipe, 2, 0);
+    lv_add_cb(title_obj, pr_swipe, 8, 0);
     lv_add_flag(title_obj, 0x4000);
   }
 
@@ -817,7 +944,7 @@ static void pr_make(int view) {
     const PrDynEp *dyn_list = 0;
     const PrEpisode *built_list = 0;
 
-    if (pr_dyn_feed_count > 0 && pr_selected_feed >= 0 && pr_selected_feed < (int)pr_dyn_feed_count) {
+    if (pr_dyn_feed_count > 0 && pr_selected_feed >= 0 && pr_selected_feed < (int)pr_dyn_feed_count && pr_dyn_feeds[pr_selected_feed].ep_count > 0) {
       total_eps = pr_dyn_feeds[pr_selected_feed].ep_count;
       dyn_list = pr_dyn_feeds[pr_selected_feed].eps;
     } else if (pr_selected_feed >= 0 && pr_selected_feed < (int)PR_PODCAST_COUNT) {
@@ -923,6 +1050,268 @@ static void pr_make(int view) {
   screen_load(pr_page);
 }
 
+/* DLNA Native Screen (0x8de290) - Podcast / Radio Progress Bar & Seek */
+static LvObj *pr_dlna_progress = 0;
+static LvObj *pr_dlna_fill = 0;
+static LvObj *pr_dlna_time = 0;
+static LvObj *pr_dlna_parent = 0;
+static int pr_dlna_cur_dur = 0;
+static int pr_dlna_cur_pos = 0;
+static unsigned pr_dlna_last_read = 0;
+static char pr_dlna_drawn_time[64] = "";
+static int pr_dlna_drawn_w = -1;
+static int pr_dlna_drawn_hidden = -1;
+
+static void pr_dlna_deleted(void *e) {
+  LvObj *target = lv_event_target(e);
+  if (target == pr_dlna_progress) {
+    pr_dlna_progress = 0;
+    pr_dlna_fill = 0;
+  }
+  if (target == pr_dlna_time) {
+    pr_dlna_time = 0;
+  }
+  if (!pr_dlna_progress && !pr_dlna_time) {
+    pr_dlna_parent = 0;
+    pr_dlna_drawn_w = -1;
+    pr_dlna_drawn_hidden = -1;
+    pr_dlna_drawn_time[0] = 0;
+  }
+}
+
+static unsigned pr_last_seek_at = 0;
+static int pr_pending_seek_sec = -1;
+
+static void pr_do_seek(int target_sec) {
+  char b[32];
+  int n = snprintf(b, sizeof(b), "%d\n", target_sec);
+  int fd = open("/tmp/disc-podcast-radio/seek_cmd", 1 | 0x100 | 0x200, 0666);
+  if (fd >= 0) {
+    write(fd, b, n);
+    close(fd);
+  }
+  int fdbg = open("/tmp/sdcard/disc-ui.log", 1 | 0x100 | 0x0008, 0666);
+  if (fdbg >= 0) {
+    char dbgbuf[256];
+    int dn = snprintf(dbgbuf, sizeof(dbgbuf), "[UI] Seek sent: dur=%d target=%02d:%02d:%02d (%d s)\n",
+                     pr_dlna_cur_dur, target_sec / 3600, (target_sec % 3600) / 60, target_sec % 60, target_sec);
+    write(fdbg, dbgbuf, dn);
+    close(fdbg);
+  }
+}
+
+static void pr_dlna_seek_click(void *e) {
+  if (!stationary_clicked(e)) return;
+  void *input = indev_active();
+  if (!input || pr_dlna_cur_dur <= 0) return;
+  int pt[2];
+  indev_point(input, pt);
+  int click_x = pt[0];
+  /* Progress bar is at x=70, width=220 */
+  int rel_x = click_x - 70;
+  if (rel_x < 0) rel_x = 0;
+  if (rel_x > 220) rel_x = 220;
+  int target_sec = 0;
+  if (pr_dlna_cur_dur > 0) {
+    target_sec = (rel_x * pr_dlna_cur_dur) / 220;
+  }
+
+  /* Optimistic instant UI update */
+  pr_dlna_cur_pos = target_sec;
+  int new_w = rel_x;
+  if (pr_dlna_fill && new_w != pr_dlna_drawn_w) {
+    lv_size(pr_dlna_fill, new_w > 0 ? new_w : 1, 10);
+    pr_dlna_drawn_w = new_w;
+  }
+
+  /* Immediate on-screen time text feedback with clear prompt */
+  if (pr_dlna_time) {
+    char feedback[64];
+    snprintf(feedback, sizeof(feedback), "▶ 快进 %02d:%02d:%02d / %02d:%02d:%02d",
+             target_sec / 3600, (target_sec % 3600) / 60, target_sec % 60,
+             pr_dlna_cur_dur / 3600, (pr_dlna_cur_dur % 3600) / 60, pr_dlna_cur_dur % 60);
+    lv_text(pr_dlna_time, feedback);
+    snprintf(pr_dlna_drawn_time, sizeof(pr_dlna_drawn_time), "%s", feedback);
+  }
+
+  unsigned now = milliseconds();
+  if (now - pr_last_seek_at < 350) {
+    /* Rapid taps: buffer target without spamming mq_player */
+    pr_pending_seek_sec = target_sec;
+    return;
+  }
+  pr_last_seek_at = now;
+  pr_pending_seek_sec = -1;
+  pr_do_seek(target_sec);
+}
+
+static void pr_dlna_sync_playback(void) {
+  LvObj *play = LV_GLOBAL(0x8de290);
+  if (!play || !lv_valid(play)) {
+    if (pr_dlna_parent) {
+      pr_dlna_progress = 0;
+      pr_dlna_fill = 0;
+      pr_dlna_time = 0;
+      pr_dlna_parent = 0;
+      pr_dlna_drawn_w = -1;
+      pr_dlna_drawn_hidden = -1;
+      pr_dlna_drawn_time[0] = 0;
+    }
+    return;
+  }
+
+  /* Construct controls if entering DLNA player screen for the first time */
+  if (pr_dlna_parent != play) {
+    pr_dlna_parent = play;
+    pr_dlna_drawn_w = -1;
+    pr_dlna_drawn_hidden = -1;
+    pr_dlna_drawn_time[0] = 0;
+
+    /* Progress bar trough: x=70, y=238, w=220, h=10 */
+    pr_dlna_progress = lv_create(play);
+    if (pr_dlna_progress) {
+      lv_border(pr_dlna_progress, 0, 0);
+      pad_top(pr_dlna_progress, 0, 0);
+      pad_bottom(pr_dlna_progress, 0, 0);
+      pad_left(pr_dlna_progress, 0, 0);
+      pad_right(pr_dlna_progress, 0, 0);
+      lv_size(pr_dlna_progress, 220, 10);
+      lv_radius(pr_dlna_progress, 5, 0);
+      lv_bg(pr_dlna_progress, 0xff202836, 0);
+      lv_align(pr_dlna_progress, 1, 70, 238);
+      protect_tap(pr_dlna_progress);
+      lv_add_cb(pr_dlna_progress, pr_dlna_seek_click, 7, 0); /* 7: LV_EVENT_CLICKED */
+      lv_add_cb(pr_dlna_progress, pr_dlna_deleted, DISC_LV_DELETE, 0);
+
+      /* Golden progress fill: height=10, radius=5 */
+      pr_dlna_fill = lv_create(pr_dlna_progress);
+      if (pr_dlna_fill) {
+        lv_border(pr_dlna_fill, 0, 0);
+        pad_top(pr_dlna_fill, 0, 0);
+        pad_bottom(pr_dlna_fill, 0, 0);
+        pad_left(pr_dlna_fill, 0, 0);
+        pad_right(pr_dlna_fill, 0, 0);
+        lv_size(pr_dlna_fill, 1, 10);
+        lv_radius(pr_dlna_fill, 5, 0);
+        lv_bg(pr_dlna_fill, 0xffdca352, 0); /* FiiO Warm Gold */
+        lv_align(pr_dlna_fill, 1, 0, 0);
+        lv_clear_flag(pr_dlna_fill, DISC_LV_CLICKABLE | DISC_LV_SCROLLABLE);
+      }
+    }
+
+    /* Time display label: x=60, y=252, w=240, h=22, font=14, centered */
+    pr_dlna_time = lv_label(play);
+    if (pr_dlna_time) {
+      pr_font(pr_dlna_time, 14);
+      lv_size(pr_dlna_time, 240, 22);
+      lv_align(pr_dlna_time, 1, 60, 252);
+      lv_color(pr_dlna_time, 0xffadb5c4, 0);
+      FN(0x4f6e50, void (*)(LvObj *, int, unsigned))(pr_dlna_time, 2, 0); /* LV_TEXT_ALIGN_CENTER */
+      lv_clear_flag(pr_dlna_time, DISC_LV_CLICKABLE | DISC_LV_SCROLLABLE);
+      lv_add_cb(pr_dlna_time, pr_dlna_deleted, DISC_LV_DELETE, 0);
+    }
+    if (pr_dlna_progress) move_index(pr_dlna_progress, -1);
+    if (pr_dlna_time) move_index(pr_dlna_time, -1);
+  }
+
+  /* Throttle tmpfs read: poll every 200ms */
+  unsigned now = milliseconds();
+  if (now - pr_last_seek_at < 1500) {
+    /* Optimistic UI lock: maintain optimistic position for 1.5s post-seek */
+    return;
+  }
+  if (now - pr_dlna_last_read < 200) return;
+  pr_dlna_last_read = now;
+
+  /* Zero-blocking read from tmpfs /tmp/disc-podcast-radio/playback_state */
+  int fd = open("/tmp/disc-podcast-radio/playback_state", 0);
+  if (fd < 0) {
+    if (pr_dlna_drawn_hidden != 1) {
+      pr_dlna_drawn_hidden = 1;
+      if (pr_dlna_progress) lv_add_flag(pr_dlna_progress, DISC_LV_HIDDEN);
+      if (pr_dlna_time) lv_add_flag(pr_dlna_time, DISC_LV_HIDDEN);
+    }
+    return;
+  }
+
+  char buf[256];
+  int n = read(fd, buf, sizeof(buf) - 1);
+  close(fd);
+  if (n <= 0) {
+    if (pr_dlna_drawn_hidden != 1) {
+      pr_dlna_drawn_hidden = 1;
+      if (pr_dlna_progress) lv_add_flag(pr_dlna_progress, DISC_LV_HIDDEN);
+      if (pr_dlna_time) lv_add_flag(pr_dlna_time, DISC_LV_HIDDEN);
+    }
+    return;
+  }
+  buf[n] = 0;
+
+  /* Format: Type \t PosSec \t DurSec \t PosStr \t DurStr \t PlayingFlag */
+  char type[32] = "", pos_str[32] = "", dur_str[32] = "";
+  int pos_sec = 0, dur_sec = 0, playing = 0;
+  int matched = sscanf(buf, "%31s\t%d\t%d\t%31s\t%31s\t%d", type, &pos_sec, &dur_sec, pos_str, dur_str, &playing);
+  if (matched < 4 || !strcmp(type, "stopped") || !strcmp(type, "idle")) {
+    if (pr_dlna_drawn_hidden != 1) {
+      pr_dlna_drawn_hidden = 1;
+      if (pr_dlna_progress) lv_add_flag(pr_dlna_progress, DISC_LV_HIDDEN);
+      if (pr_dlna_time) lv_add_flag(pr_dlna_time, DISC_LV_HIDDEN);
+    }
+    return;
+  }
+
+  pr_dlna_cur_pos = pos_sec;
+  pr_dlna_cur_dur = dur_sec;
+
+  if (pr_dlna_drawn_hidden != 0) {
+    pr_dlna_drawn_hidden = 0;
+    if (pr_dlna_time) {
+      lv_clear_flag(pr_dlna_time, DISC_LV_HIDDEN);
+      move_index(pr_dlna_time, -1);
+    }
+  }
+
+  if (!strcmp(type, "podcast")) {
+    /* Podcast mode: show progress bar + time "05:12 / 45:20" */
+    if (pr_dlna_progress) {
+      lv_clear_flag(pr_dlna_progress, DISC_LV_HIDDEN);
+      move_index(pr_dlna_progress, -1);
+    }
+
+    int fill_w = 1;
+    if (dur_sec > 0) {
+      fill_w = (pos_sec * 220) / dur_sec;
+      if (fill_w < 1) fill_w = 1;
+      if (fill_w > 220) fill_w = 220;
+    }
+    if (pr_dlna_fill && fill_w != pr_dlna_drawn_w) {
+      lv_size(pr_dlna_fill, fill_w, 10);
+      pr_dlna_drawn_w = fill_w;
+    }
+
+    char time_text[64];
+    if (dur_str[0] && strcmp(dur_str, "--:--")) {
+      snprintf(time_text, sizeof(time_text), "%s / %s", pos_str, dur_str);
+    } else {
+      snprintf(time_text, sizeof(time_text), "%s", pos_str);
+    }
+    if (pr_dlna_time && strcmp(pr_dlna_drawn_time, time_text)) {
+      lv_text(pr_dlna_time, time_text);
+      snprintf(pr_dlna_drawn_time, sizeof(pr_dlna_drawn_time), "%s", time_text);
+    }
+  } else {
+    /* Radio mode: live stream, hide progress bar, show "[电台直播] 12:34" */
+    if (pr_dlna_progress) lv_add_flag(pr_dlna_progress, DISC_LV_HIDDEN);
+
+    char time_text[64];
+    snprintf(time_text, sizeof(time_text), "[电台直播]  %s", pos_str);
+    if (pr_dlna_time && strcmp(pr_dlna_drawn_time, time_text)) {
+      lv_text(pr_dlna_time, time_text);
+      snprintf(pr_dlna_drawn_time, sizeof(pr_dlna_drawn_time), "%s", time_text);
+    }
+  }
+}
+
 /* Polling hook invoked inside main poll() */
 static void pr_poll(void) {
   LvObj *media = LV_GLOBAL(0x8de1b0);
@@ -965,11 +1354,56 @@ static void pr_poll(void) {
     }
   }
 
+  /* Debounced seek dispatch */
+  if (pr_pending_seek_sec >= 0) {
+    unsigned now = milliseconds();
+    if (now - pr_last_seek_at >= 350) {
+      int s = pr_pending_seek_sec;
+      pr_pending_seek_sec = -1;
+      pr_last_seek_at = now;
+      pr_do_seek(s);
+    }
+  }
+
+  /* Deferred playback transition: guarantees clean LVGL screen deletion outside click event callback */
+  if (pr_play_pending) {
+    pr_play_pending = 0;
+    pr_clear();
+    pr_current_view = PR_VIEW_NONE;
+    if (*(unsigned char *)0x8e171c) {
+      FN(0x46b7a0, void (*)(void))();
+      FN(0x459f20, void (*)(unsigned))(1);
+      FN(0x459f14, void (*)(void (*)(void)))(dlna_enter_native);
+      FN(0x45a940, void (*)(void))();
+      FN(0x459f20, void (*)(unsigned))(0);
+    } else {
+      dlna_enter_native();
+    }
+  }
+
   if (pr_open_pending) {
     pr_open_pending = 0;
     pr_ep_page = 0;
     pr_radio_page = 0;
     pr_make(pr_requested_view);
+  }
+
+  if (pr_current_view == PR_VIEW_PODCAST_FEEDS && pr_dyn_feed_count == 0) {
+    if (!access("/tmp/disc-podcast-radio/episodes.txt", 0)) {
+      pr_reload_dynamic_episodes();
+      if (pr_dyn_feed_count > 0) {
+        pr_make(PR_VIEW_PODCAST_FEEDS);
+      }
+    }
+  }
+
+  if (pr_current_view == PR_VIEW_RADIO_CATS && pr_dyn_radio_cat_count == 0) {
+    if (!access("/tmp/disc-podcast-radio/radios.txt", 0)) {
+      pr_reload_dynamic_radios();
+      if (pr_dyn_radio_cat_count > 0) {
+        pr_make(PR_VIEW_RADIO_CATS);
+      }
+    }
   }
 
   if (pr_back_pending) {
@@ -981,10 +1415,21 @@ static void pr_poll(void) {
       pr_radio_page = 0;
       pr_make(PR_VIEW_RADIO_CATS);
     } else if (pr_current_view != PR_VIEW_NONE) {
-      pr_clear();
-      if (media && lv_valid(media)) screen_load(media);
+      LvObj *origin = pr_origin ? pr_origin : media;
+      LvObj *old = pr_page;
+      pr_page = 0;
+      pr_status_label = 0;
+      pr_prev_btn = 0;
+      pr_next_btn = 0;
+      pr_current_view = PR_VIEW_NONE;
+      for (int i = 0; i < 16; i++) pr_row_objs[i] = 0;
+      for (int i = 0; i < PR_EP_PER_PAGE; i++) pr_ep_rows[i] = 0;
+      if (origin && lv_valid(origin)) screen_load(origin);
+      if (old && lv_valid(old)) screen_delete(&old);
     }
   }
+
+  pr_dlna_sync_playback();
 }
 
 #endif /* DISC_PODCAST_RADIO_UI_H */

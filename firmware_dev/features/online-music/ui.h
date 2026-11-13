@@ -88,8 +88,39 @@ static void online_swipe(void *e){int r=FN(0x488860,int (*)(void *))(e);if(r==3&
 }
 static void online_more_click(void *e){if(!stationary_clicked(e))return;LvObj *o=lv_event_target(e);unsigned row=(unsigned)(unsigned long)FN(0x4e394c,void *(*)(void *))(e);(void)o;online_song_more=(int)row;online_pending_action=200+(int)row;}
 static void online_click(void *e){if(!stationary_clicked(e))return;LvObj *o=lv_event_target(e);if(o==online_actions[95]){online_pending_action=100;return;}for(unsigned i=0;i<online_action_count;i++)if(o==online_actions[i]){online_pending_action=(int)i;return;}}
+extern char *strchr(const char *,int);
+static int online_is_backend_running(void) {
+  int fd = open("/tmp/disc-online-music/ready", 0);
+  if (fd < 0) return 0;
+  char buf[64];
+  int n = read(fd, buf, sizeof(buf) - 1);
+  close(fd);
+  if (n <= 0) return 0;
+  buf[n] = '\0';
+  char *sp = strchr(buf, ' ');
+  int pid = sp ? (int)strtol(sp + 1, 0, 10) : (int)strtol(buf, 0, 10);
+  if (pid <= 0) return 0;
+  return kill(pid, 0) == 0;
+}
+
+static void online_ensure_backend(void) {
+  if (online_is_backend_running()) return;
+  mkdir("/tmp/disc-online-music", 0777);
+  int f = open("/tmp/disc-online-music/launch_requested", 1 | 0x100 | 0x200, 0666);
+  if (f >= 0) { write(f, "1", 1); close(f); }
+
+  system("nohup sh -c '"
+         "if [ -f /usr/data/disc-runtime/components/disc-online-music/current/entry.sh ]; then "
+         "  /usr/data/disc-runtime/components/disc-online-music/current/entry.sh; "
+         "elif [ -f /usr/data/disc-runtime/service/module-run.sh ]; then "
+         "  /usr/data/disc-runtime/service/module-run.sh disc-online-music; "
+         "else "
+         "  for f in /tmp/sdcard/DISC_MODULES/disc-online-music/*/entry.sh; do [ -f \"$f\" ] && exec \"$f\"; done; "
+         "fi' >/tmp/disc-runtime/component-disc-online-music.log 2>&1 </dev/null &");
+}
+
 static void online_confirmed(void){online_open_pending=1;}
-static void online_enter(void *e){if(!stationary_clicked(e))return;for(unsigned i=0;i<3;i++)if(lv_event_target(e)==online_rows[i])online_source=(int)i;if(FN(0x46f290,int (*)(void))()!=17){FN(0x46fdac,void (*)(void (*)(void)))(FN(0x474838,void (*)(void)));return;}
+static void online_enter(void *e){if(!stationary_clicked(e))return;online_ensure_backend();for(unsigned i=0;i<3;i++)if(lv_event_target(e)==online_rows[i])online_source=(int)i;if(FN(0x46f290,int (*)(void))()!=17){FN(0x46fdac,void (*)(void (*)(void)))(FN(0x474838,void (*)(void)));return;}
  if(*(unsigned char *)0x8e171c){FN(0x46b7a0,void (*)(void))();FN(0x459f20,void (*)(unsigned))(1);FN(0x459f14,void (*)(void (*)(void)))(online_confirmed);FN(0x45a940,void (*)(void))();FN(0x459f20,void (*)(unsigned))(0);}else online_confirmed();}
 static void online_clear(void){if(!online_page)return;LvObj *old=online_page;online_page=0;screen_delete(&old);online_play_title=online_play_artist_label=online_play_time=online_play_toggle=online_play_format=online_cover=0;online_mode_button=0;online_drawn_title[0]=online_drawn_artist[0]=online_drawn_time[0]=0;online_drawn_progress=~0u;online_drawn_lyric=-999;online_drawn_toggle=-1;online_thumb_loaded=0;for(unsigned k=0;k<30;k++)online_thumbs[k]=0;online_progress=online_progress_fill=online_toggle_image=0;for(unsigned k=0;k<5;k++)online_lyric_labels[k]=0;online_status=online_query_label=0;online_action_count=0;online_actions[95]=0;online_pending_action=-1;online_list_tail=online_list_batch=0;for(unsigned k=0;k<30;k++)online_row_title[k]=online_row_detail[k]=0;}
 static LvObj *online_button(const char *s,int x,int y,int width,int height){LvObj *b=lv_btn(online_page);lv_size(b,width,height);lv_align(b,1,x,y);lv_bg(b,0xff1b2635,0);lv_border(b,0,0);lv_radius(b,12,0);pad_top(b,0,0);pad_bottom(b,0,0);pad_left(b,0,0);pad_right(b,0,0);LvObj *t=lv_label(b);online_font(t,18);lv_text(t,s);lv_size(t,width-4,0x200007d1);FN(0x52f4f0,void (*)(LvObj *,int))(t,4);FN(0x4f6e50,void (*)(LvObj *,unsigned,unsigned))(t,2,0);lv_color(t,0xffffffff,0);lv_align(t,9,0,0);lv_clear_flag(t,2|16);protect_tap(b);lv_add_cb(b,online_click,7,0);online_actions[online_action_count++]=b;return b;}
@@ -300,7 +331,13 @@ static void online_poll(void){
  if(online_shade_pending){online_shade_pending=0;LvObj *shade=LV_GLOBAL(0x8deee4);if(shade&&lv_valid(shade)){lv_clear_flag(shade,1);online_shade_animate(shade,0);}}
  if(online_resume_pending){online_resume_pending=0;online_save_browser();if(!online_origin){online_origin=lv_active_screen(lv_disp_default());if(online_origin)lv_add_cb(online_origin,online_deleted,33,0);}online_make(8);}
  LvObj *media=LV_GLOBAL(0x8de1b0);if(media&&lv_valid(media))for(unsigned i=0;i<3;i++)if(!online_rows[i]){unsigned n=child_count(media);original_row(media,online_names[i],i,online_enter,0);if(child_count(media)>n){online_rows[i]=child(media,-1);protect_tap(online_rows[i]);lv_add_cb(online_rows[i],online_deleted,33,0);}}
- if(online_open_pending){int f=open("/tmp/disc-online-music/session",1|0x100|0x200,0600);if(f>=0){write(f,"1",1);close(f);}online_exit_waiting=0;online_open_pending=0;online_origin=media;if(media)lv_add_cb(media,online_deleted,33,0);online_make(0);online_send("account",0,0);}
+ if(online_open_pending){
+  if(!online_is_backend_running()){
+   online_ensure_backend();
+   return;
+  }
+  int f=open("/tmp/disc-online-music/session",1|0x100|0x200,0600);if(f>=0){write(f,"1",1);close(f);}online_exit_waiting=0;online_open_pending=0;online_origin=media;if(media)lv_add_cb(media,online_deleted,33,0);online_make(0);online_send("account",0,0);
+ }
  if(!online_page)return;
  if(online_back_pending&&!online_exit_waiting){online_back_pending=0;char b[64];int n=snprintf(b,sizeof(b),"%u\tcancel\n",milliseconds());int f=open("/tmp/disc-online-music/request.next",1|0x100|0x200,0600);if(f>=0){int ok=write(f,b,n)==n;close(f);if(ok)rename("/tmp/disc-online-music/request.next","/tmp/disc-online-music/request");}online_seq=0;online_loading_more=0;if(online_view==8||online_view==12){online_return_browser();if(online_view==13){online_queue_restore_scroll=online_browser.scroll;online_command("queue","","");}}else if(online_view==9){online_make(8);}else if(online_view==11||online_view==13){if(online_view==13&&online_queue_parent.valid)online_browser=online_queue_parent;online_make(8);}else if(online_view==10||online_view==14){online_return_browser();}else if(online_view==17){online_download_return();}else if(online_view==5){OnlineCatalog *cat=&online_catalogs[1];cat->scroll=online_scroll_position();if(cat->favorite){online_make(0);}else{online_restore_catalog(4);}}else if(online_view==4){online_catalogs[0].scroll=online_scroll_position();online_make(0);}else if(online_view==3){online_make(6);online_send("account",0,0);}else if(online_view)online_make(0);else{online_request_exit();}return;}
  if(online_pending_action>=0){int i=online_pending_action,continue_keyboard=1;online_pending_action=-1;if(i>=200){online_save_browser();online_song_more=i-200;online_more_generation=online_row_generation[online_song_more];online_more_index=online_row_index[online_song_more];if(online_view!=5){online_more_generation=online_generation;online_more_index=(unsigned)online_song_more;}snprintf(online_more_name,804,"%s",online_results[online_song_more]);online_make(14);return;}

@@ -9,7 +9,7 @@ extern void *dlsym(void *,const char *);
 extern char *getenv(const char *);
 extern int setenv(const char *,const char *,int);
 extern int pthread_mutex_trylock(void *),pthread_mutex_unlock(void *);
-extern int clock_gettime(int,void *),getpid(void),snprintf(char *,size_t,const char *,...);
+extern int clock_gettime(int,void *),getpid(void),kill(int,int),snprintf(char *,size_t,const char *,...);
 extern int socket(int,int,int),ioctl(int,unsigned,...);
 extern long strtol(const char *,char **,int);
 extern unsigned long long strtoull(const char *,char **,int);
@@ -624,6 +624,8 @@ __attribute__((noinline,visibility("hidden"))) int disc_usleep(unsigned usec) {
     * this verified call site. Constructors only attach the sleep hook. */
    if(startup_claim(&startup_gate,caller,lv_disp_default()!=0,1)){
     startup_trace("ui.module-load.begin");
+    unlink("/usr/data/disc-runtime/components/disc-podcast-radio/enabled");
+    unlink("/usr/data/disc-runtime/components/disc-online-music/enabled");
     enable_wifi_capture();startup_trace("ui.environment-ready");
     hw_bridge_refresh();startup_trace("ui.hardware-checked");
     bt_bridge_refresh();startup_trace("ui.bluetooth-checked");
@@ -642,11 +644,12 @@ __attribute__((noinline,visibility("hidden"))) int disc_usleep(unsigned usec) {
 #include "../bluetooth-meter/bt_playback.h"
 #include "../embedded-cover/player_binding.h"
 #include "tf_mount_guard.h"
+#include "../podcast-radio/m4a_seek_hook.h"
 __attribute__((constructor)) static void start(void) {
  if(access("/usr/data/disc-settings.enabled",0))return;
  if(!startup_is_app())return;
  startup_trace("constructor.enter");
- if(!identity()){if(player_identity()){startup_trace("player.identity-ok");enable_wifi_capture();diag_start();pc_install();library_scope_player_install();if(pc_real_usleep){bp_install();cover_install();}startup_trace("player.ready");}return;}
+ if(!identity()){if(player_identity()){startup_trace("player.identity-ok");enable_wifi_capture();diag_start();pc_install();m4a_seek_hook_install();library_scope_player_install();if(pc_real_usleep){bp_install();cover_install();}startup_trace("player.ready");}return;}
  startup_trace("ui.identity-ok");
  if(!module_cache_sync("/usr/data/disc-settings/module-ui.so")){startup_trace("ui.cache.failed");return;}
  startup_trace("ui.cache.ok");
